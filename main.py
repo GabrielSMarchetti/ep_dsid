@@ -2,7 +2,7 @@ import sys
 import threading
 from src.client import Client
 from src.node import NodeServer
-from src.messages import MessageFactory
+from src.messages import MessageBuilder
 import threading
 
 
@@ -10,9 +10,12 @@ def main():
     arguments = sys.argv
     origin = arguments[1]
     address, port = origin.split(':')
-    message_factory = MessageFactory(origin)
-    server = NodeServer(address, port, arguments[2],
-                        [], True, message_factory)
+    key_value = ''
+    if len(arguments) == 4:
+        key_value = arguments[3]
+    message_builder = MessageBuilder()
+    server = NodeServer(address, port, arguments[2], key_value,
+                        True, message_builder)
     client = Client(server)
     server_thread = threading.Thread(target=server.initialize_socket)
     client_thread = threading.Thread(target=client.run)
